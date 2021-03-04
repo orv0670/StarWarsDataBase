@@ -76,12 +76,12 @@ def get_planeta(planeta_id):
     planetajson = planeta.serialize()
     return jsonify(planetajson)
 
-@app.route('/favoritos/users/<int:user_id>', methods=['GET'])
-def get_favoritos_usuario(user_id):
+@app.route('/favoritos/', methods=['GET'])
+def get_favoritos_usuario():
     all_favoritos = Favoritos.query.all()
     lista_favoritos = list(map(lambda favoritos: favoritos.serialize(), all_favoritos))
-    favoritos_usuario = list(filter(lambda user_fav: user_fav['user_id'] == user_id, lista_favoritos))
-    return jsonify(favoritos_usuario)
+    #favoritos_usuario = list(filter(lambda user_fav: user_fav['user_id'] == user_id, lista_favoritos))
+    return jsonify(lista_favoritos)
 
 @app.route('/profile', methods=['GET'])
 @jwt_required()
@@ -91,11 +91,11 @@ def profile():
         return jsonify({"success": "Acceso a espacio privado", "usuario": token}), 200
 
 # bloque de metodos POST
-@app.route('/favoritos/users/<user_id>', methods=['POST'])
-def agregar_favorito(user_id):
+@app.route('/favoritos', methods=['POST'])
+@jwt_required()
+def agregar_favorito():
     request_body = request.get_json()
-    nombre_favorito = request_body['nombre_favorito']
-    favorito = Favoritos(user_id = user_id, nombre_favorito = nombre_favorito)
+    favorito = Favoritos(nombre_favorito = request_body["nombre_favorito"], type_favorito = request_body["type_favorito"], user_id = request_body["user_id"])
     db.session.add(favorito)
     db.session.commit()
     return jsonify({"msg": "el favorito se ha agregado con exito"})
