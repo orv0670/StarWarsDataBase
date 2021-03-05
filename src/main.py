@@ -76,12 +76,13 @@ def get_planeta(planeta_id):
     planetajson = planeta.serialize()
     return jsonify(planetajson)
 
-@app.route('/favoritos/', methods=['GET'])
-def get_favoritos_usuario():
+@app.route('/favoritos/<int:user_id>', methods=['GET'])
+@jwt_required()
+def get_favoritos_usuario(user_id):
     all_favoritos = Favoritos.query.all()
     lista_favoritos = list(map(lambda favoritos: favoritos.serialize(), all_favoritos))
-    #favoritos_usuario = list(filter(lambda user_fav: user_fav['user_id'] == user_id, lista_favoritos))
-    return jsonify(lista_favoritos)
+    favoritos_usuario = list(filter(lambda user_fav: user_fav['user_id'] == user_id, lista_favoritos))
+    return jsonify(favoritos_usuario)
 
 @app.route('/profile', methods=['GET'])
 @jwt_required()
