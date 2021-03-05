@@ -176,9 +176,10 @@ def login():
         return jsonify(data), 200
 
 #bloque de DELETE(favoritos)
-@app.route('/favoritos/<int:favorito_id>', methods=['DELETE'])
-def borrar_favorito(favorito_id):
-    favorito = Favoritos.query.get(favorito_id)
+@app.route('/favoritos/<int:user_id>/<nombre_favorito>', methods=['DELETE'])
+@jwt_required()
+def borrar_favorito(nombre_favorito, user_id):
+    favorito = Favoritos.query.filter_by(nombre_favorito = nombre_favorito, user_id = user_id).first()
     if favorito is None:
         raise APIException('favorito no encontrado', status_code=404)
     db.session.delete(favorito)
